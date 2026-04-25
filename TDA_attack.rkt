@@ -89,3 +89,58 @@
   (lambda (a)
     (list-ref a 3)))
 
+;Otras funciones
+
+(define attack-has-name?
+  (lambda (a nombre)
+    (if (string=? (string-downcase (attack-name a)) (string-downcase nombre))
+        #t
+        #f)))
+
+(define (attack-can-use? a energias-disponibles)
+  (let ((costo (attack-cost a))
+        (energias (map elem->symbol energias-disponibles)))
+    (revisar-todo costo energias)))
+
+(define (revisar-todo costo energias)
+  (if (null? costo)
+      #t
+      (let ((actual (elem->symbol (car costo))))
+        (if (eq? actual 'colorless)
+            (revisar-todo (cdr costo) energias)
+            (if (esta-en-lista? actual energias)
+                (revisar-todo (cdr costo) (quitar-primero actual energias))
+                #f)))))
+
+(define (esta-en-lista? elemento lista)
+  (if (null? lista)
+      #f
+      (if (eq? elemento (car lista))
+          #t
+          (esta-en-lista? elemento (cdr lista)))))
+
+(define (quitar-primero elemento lista)
+  (if (null? lista)
+      '()
+      (if (eq? elemento (car lista))
+          (cdr lista)
+          (cons (car lista) (quitar-primero elemento (cdr lista))))))
+
+
+(define (attack->string a)
+  (string-append
+    "  Ataque  : " (attack-name a) "\n"
+    "  Costo   : [" (lista-a-string (attack-cost a)) "]\n"
+    "  Efecto  : " (attack-text a) "\n"))
+
+(define (lista-a-string lista)
+  (if (null? lista)
+      "(ninguno)"
+      (unir-elementos lista)))
+
+(define (unir-elementos lista)
+  (if (null? (cdr lista))
+      (symbol->string (car lista))
+      (string-append (symbol->string (car lista))
+                     ", "
+                     (unir-elementos (cdr lista)))))
