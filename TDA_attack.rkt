@@ -1,6 +1,17 @@
 #lang racket
 
 
+(provide
+  attack
+  attack?
+  attack-cost
+  attack-name
+  attack-text
+  attack-function
+  attack->string
+  attack-has-name?
+  attack-can-use?
+  elem->symbol)
 
 ;Tipo de elemento
 (define ELEMENT-TYPE
@@ -71,8 +82,10 @@
          (procedure? (list-ref a 3)))))
 
 ;Selectores
+(define attack-cost
   (lambda (a)
     (list-ref a 0)))
+
 
 
 (define attack-name
