@@ -123,4 +123,116 @@
                       (if (null? deb) null (to-symbol deb))
                       (if (null? res) null (to-symbol res))
                       ret ex hab atq))))))
+;Pertenencia
+(define card?
+  (lambda (c)
+    (and (list? c)
+         (>= (length c) 2)
+         (symbol? (car c))
+         (member (car c) '(pokemon energy trainer))
+         #t)))
+
+(define card-pokemon?
+  (lambda (c)
+    (and (card? c)
+         (eq? (car c) 'pokemon))))
+
+(define card-energy?
+  (lambda (c)
+    (and (card? c)
+         (eq? (car c) 'energy))))
+
+(define card-trainer?
+  (lambda (c)
+    (and (card? c)
+         (eq? (car c) 'trainer))))
+
+
+(define card-basic-pokemon?
+  (lambda (c)
+    (and (card-pokemon? c)
+         (null? (card-evolves-from c)))))
+
+;selectores
+
+
+(define card-type
+  (lambda (c)
+    (list-ref c 0)))
+
+(define card-name
+  (lambda (c)
+    (list-ref c 1)))
+;selectores
+
+(define card-evolves-from
+  (lambda (c)
+    (list-ref c 2)))
+
+(define card-hp
+  (lambda (c)
+    (list-ref c 3)))
+
+(define card-pokemon-type
+  (lambda (c)
+    (list-ref c 4)))
+
+(define card-weakness
+  (lambda (c)
+    (list-ref c 5)))
+
+(define card-resistance
+  (lambda (c)
+    (list-ref c 6)))
+
+(define card-retreat-cost
+  (lambda (c)
+    (list-ref c 7)))
+
+(define card-is-ex?
+  (lambda (c)
+    (list-ref c 8)))
+
+(define card-ability
+  (lambda (c)
+    (list-ref c 9)))
+
+
+(define card-attacks
+  (lambda (c)
+    (list-ref c 10)))
+
+; selector energia
+(define card-energy-type
+  (lambda (c)
+    (let ((nombre (card-name c)))
+      (cond
+        ((symbol? nombre)
+         (let ((s (symbol->string nombre)))
+           (cond
+             ((regexp-match? #rx"-energy$" s)
+              (string->symbol (substring s 0 (- (string-length s) 7))))
+             (else nombre))))
+        ((string? nombre)
+         (let ((n (string-downcase nombre)))
+           (cond
+             ((regexp-match? #rx"-energy$" n)
+              (string->symbol (substring n 0 (- (string-length n) 7))))
+             (else 'colorless))))
+        (else 'colorless)))))
+
+;selectores entrenador
+(define card-trainer-type
+  (lambda (c)
+    (list-ref c 2)))
+
+
+(define card-trainer-text
+  (lambda (c)
+    (list-ref c 3)))
+
+
+(define card-trainer-function
+  (lambda (c)
+    (list-ref c 4)))
 
