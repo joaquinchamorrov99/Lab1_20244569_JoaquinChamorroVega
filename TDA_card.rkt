@@ -4,6 +4,43 @@
 (require "TDA_attack.rkt")
 
 
+
+(provide
+  card
+  card?
+  card-pokemon?
+  card-energy?
+  card-trainer?
+  card-type
+  card-name
+
+  ; selectores pokemon
+  card-evolves-from
+  card-hp
+  card-pokemon-type
+  card-weakness
+  card-resistance
+  card-retreat-cost
+  card-is-ex?
+  card-ability
+  card-attacks
+
+  ; selectores energy
+  card-energy-type
+
+  ; selectores trainer
+  card-trainer-type
+  card-trainer-text
+  card-trainer-function
+
+  ; otras funciones
+  card->string
+  card-has-attack?
+  card-get-attack
+  card-basic-pokemon?)
+
+
+; Tipos de carta como símbolos
 (define CARD-TYPE '(pokemon energy trainer))
 (define TRAINER-TYPES '("partidario" "objeto"))
 
@@ -24,7 +61,6 @@
       (if (eq? item (car lista))
           #t
           (esta-en-lista? item (cdr lista)))))
-
 
 
 (define (valid-card-type? t)
@@ -53,13 +89,14 @@
           #t
           (esta-en-lista3? elemento (cdr lista)))))
 
-
 (define (to-symbol v)
   (if (symbol? v)
       v
       (if (string? v)
           (string->symbol (string-downcase v))
           v)))
+
+
 
 
 (define (is-card-type? v expected-sym)
@@ -78,6 +115,7 @@
       ((not (attack? (car ataques))) #f)
       (else (valid-attacks? (cdr ataques) tiene-habilidad)))))
 
+
 (define (card . args)
   (if (< (length args) 2)
       (error "card: se requieren al menos 2 argumentos")
@@ -88,11 +126,21 @@
           ((is-card-type? tipo 'pokemon) (crear-carta-pokemon args))
           (else (error "card: tipoCarta inválido"))))))
 
-
 (define (crear-carta-energia args)
-  (if (not (= (length args) 2))
-      (error "card energy: solo requiere tipo y nombre")
-      (list 'energy (cadr args))))
+  (cond
+    ((= (length args) 2)
+     (list 'energy (cadr args)))
+    ((= (length args) 3)
+     (let ((nombre (cadr args))
+           (tipo-e (caddr args)))
+       (cond
+         ((not (or (string? nombre) (symbol? nombre)))
+          (error "card energy: nombre debe ser string o symbol"))
+         ((not (valid-element? tipo-e))
+          (error "card energy: tipo de energía inválido" tipo-e))
+         (else (list 'energy nombre (to-symbol tipo-e))))))
+    (else (error "card energy: requiere 2 o 3 argumentos"
+                 (length args)))))
 
 (define (crear-carta-entrenador args)
   (if (not (= (length args) 5))
@@ -114,15 +162,22 @@
             (tipo (list-ref args 4)) (deb (list-ref args 5)) (res (list-ref args 6))
             (ret (list-ref args 7)) (ex (list-ref args 8)) (hab (list-ref args 9))
             (atq (list-ref args 10)))
-     
+        
         (cond
           ((not (string? n)) (error "nombre inválido"))
           ((not (integer? ps)) (error "ps debe ser entero"))
+          ((not (positive? ps)) (error "ps debe ser positivo, no 0 ni negativo" ps))
           ((not (valid-element? tipo)) (error "tipo inválido"))
+          ((not (valid-attacks? atq (not (null? hab))))
+           (error "ataques: máximo 3, o máximo 2 si el pokémon tiene habilidad"))
           (else (list 'pokemon n ev ps (to-symbol tipo) 
                       (if (null? deb) null (to-symbol deb))
                       (if (null? res) null (to-symbol res))
                       ret ex hab atq))))))
+
+
+     
+      
 ;Pertenencia
 (define card?
   (lambda (c)
@@ -153,7 +208,9 @@
     (and (card-pokemon? c)
          (null? (card-evolves-from c)))))
 
+
 ;selectores
+
 
 
 (define card-type
@@ -205,21 +262,26 @@
 ; selector energia
 (define card-energy-type
   (lambda (c)
-    (let ((nombre (card-name c)))
-      (cond
-        ((symbol? nombre)
-         (let ((s (symbol->string nombre)))
-           (cond
-             ((regexp-match? #rx"-energy$" s)
-              (string->symbol (substring s 0 (- (string-length s) 7))))
-             (else nombre))))
-        ((string? nombre)
-         (let ((n (string-downcase nombre)))
-           (cond
-             ((regexp-match? #rx"-energy$" n)
-              (string->symbol (substring n 0 (- (string-length n) 7))))
-             (else 'colorless))))
-        (else 'colorless)))))
+    (cond
+      
+      ((>= (length c) 3) (list-ref c 2))
+      
+      (else
+       (let ((nombre (card-name c)))
+         (cond
+           ((symbol? nombre)
+            (let ((s (symbol->string nombre)))
+              (cond
+                ((regexp-match? #rx"-energy$" s)
+                 (string->symbol (substring s 0 (- (string-length s) 7))))
+                (else nombre))))
+           ((string? nombre)
+            (let ((n (string-downcase nombre)))
+              (cond
+                ((regexp-match? #rx"-energy$" n)
+                 (string->symbol (substring n 0 (- (string-length n) 7))))
+                (else 'colorless))))
+           (else 'colorless)))))))
 
 ;selectores entrenador
 (define card-trainer-type
@@ -232,7 +294,83 @@
     (list-ref c 3)))
 
 
+
 (define card-trainer-function
   (lambda (c)
     (list-ref c 4)))
+
+
+;Otras funciones
+
+
+(define card-has-attack?
+  (lambda (c nombre-ataque)
+    (define (buscar ataques)
+      (cond
+        ((null? ataques) #f)
+        ((attack-has-name? (car ataques) nombre-ataque) #t)
+        (else (buscar (cdr ataques)))))
+    (and (card-pokemon? c)
+         (buscar (card-attacks c)))))
+
+
+
+(define card-get-attack
+  (lambda (c nombre-ataque)
+    (define (buscar ataques)
+      (cond
+        ((null? ataques) #f)
+        ((attack-has-name? (car ataques) nombre-ataque) (car ataques))
+        (else (buscar (cdr ataques)))))
+    (and (card-pokemon? c)
+         (buscar (card-attacks c)))))
+
+
+(define attacks->string
+  (lambda (ataques acc)
+    (cond
+      ((null? ataques) acc)
+      (else
+       (attacks->string
+        (cdr ataques)
+        (string-append acc (attack->string (car ataques))))))))
+
+
+(define (card->string c)
+  (if (card-energy? c)
+      (string-append "[ENERGÍA] " (nombre-a-string (card-name c)) "\n")
+      (if (card-trainer? c)
+          (string-append "[ENTRENADOR - " (string-upcase (card-trainer-type c)) "] "
+                         (card-name c) "\n  Efecto: " (card-trainer-text c) "\n")
+          (if (card-pokemon? c)
+              (string-append "[POKÉMON] " (card-name c) (if (card-is-ex? c) " EX" "") "\n"
+                             (info-etapa c)
+                             "  PS        : " (number->string (card-hp c)) "\n"
+                             "  Tipo      : " (symbol->string (card-pokemon-type c)) "\n"
+                             (info-debilidad c)
+                             (info-resistencia c)
+                             (info-retirada c))
+              "Carta desconocida\n"))))
+
+
+
+(define (nombre-a-string n)
+  (if (symbol? n) (symbol->string n) n))
+
+(define (info-etapa c)
+  (if (card-basic-pokemon? c)
+      "  Etapa     : Básico\n"
+      (string-append "  Etapa     : Evoluciona de " (card-evolves-from c) "\n")))
+
+(define (info-debilidad c)
+  (string-append "  Debilidad : " (if (null? (card-weakness c)) "ninguna" (symbol->string (card-weakness c))) "\n"))
+
+(define (info-resistencia c)
+  (string-append "  Resistencia: " (if (null? (card-resistance c)) "ninguna" (symbol->string (card-resistance c))) "\n"))
+
+(define (info-retirada c)
+  (if (null? (card-retreat-cost c))
+      "  Retirada  : ninguna\n"
+      (string-append "  Retirada  : " (number->string (card-retreat-cost c)) " energía(s) incolora(s)\n")))
+
 

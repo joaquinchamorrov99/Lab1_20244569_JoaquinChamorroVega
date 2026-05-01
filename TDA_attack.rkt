@@ -3,6 +3,7 @@
 
 (provide
   attack
+  ability
   attack?
   attack-cost
   attack-name
@@ -12,6 +13,7 @@
   attack-has-name?
   attack-can-use?
   elem->symbol)
+
 
 ;Tipo de elemento
 (define ELEMENT-TYPE
@@ -38,17 +40,17 @@
 (define all-valid-elements?
   (lambda (lst)
     (cond
-      ((null? lst) #t)
-      ((not (valid-element? (car lst))) #f)
-      (else (all-valid-elements? (cdr lst))))))
+      [(null? lst) #t]
+      [(not (valid-element? (car lst))) #f]
+      [else (all-valid-elements? (cdr lst))])))
 
 
 (define elem->symbol
   (lambda (e)
     (cond
-      ((symbol? e) e)
-      ((string? e) (string->symbol (string-downcase e)))
-      (else e))))
+      [(symbol? e) e]
+      [(string? e) (string->symbol (string-downcase e))]
+      [else e])))
 
 
 ;Constructor
@@ -66,8 +68,13 @@
       ((not (procedure? funcion))
        (error "attack: funcion debe ser un procedimiento"))
       (else
-       
+      
        (list (map elem->symbol costo) nombre texto funcion)))))
+
+(define ability
+  (lambda (nombre texto funcion)
+    (attack '() nombre texto funcion)))
+
 
 ;Funcion de pertenencia
 
@@ -81,11 +88,11 @@
          (string? (list-ref a 2))
          (procedure? (list-ref a 3)))))
 
+
 ;Selectores
 (define attack-cost
   (lambda (a)
     (list-ref a 0)))
-
 
 
 (define attack-name
@@ -106,9 +113,7 @@
 
 (define attack-has-name?
   (lambda (a nombre)
-    (if (string=? (string-downcase (attack-name a)) (string-downcase nombre))
-        #t
-        #f)))
+    (string-ci=? (attack-name a) nombre)))
 
 (define (attack-can-use? a energias-disponibles)
   (let ((costo (attack-cost a))
@@ -138,7 +143,6 @@
       (if (eq? elemento (car lista))
           (cdr lista)
           (cons (car lista) (quitar-primero elemento (cdr lista))))))
-
 
 (define (attack->string a)
   (string-append
