@@ -310,13 +310,13 @@
        
        ;; Bloque del Jugador 1
        (if (= numero-jugador 1)
-           (player-block->string j1 #t "───────── JUGADOR 1 (Tu) ────────────────────────────────")
-           (player-block->string j1 #f "───────── JUGADOR 1 (Rival) ─────────────────────────────"))
+           (player-block->string j1 #t "───────── JUGADOR 1 (Tu) ────────────────────────────────_")
+           (player-block->string j1 #f "───────── JUGADOR 1 (Rival) ─────────────────────────────_"))
        "\n"
        
        ;; Bloque del Jugador 2
        (if (= numero-jugador 2)
-           (player-block->string j2 #t "───────── JUGADOR 2 (Tu) ─────────────────────────────────")
-           (player-block->string j2 #f "───────── JUGADOR 2 (Rival) ──────────────────────────────"))
+           (player-block->string j2 #t "───────── JUGADOR 2 (Tu) ─────────────────────────────────_")
+           (player-block->string j2 #f "───────── JUGADOR 2 (Rival) ──────────────────────────────_"))
        "\n"
        "══════════════════════════════════════════════\n"))))
