@@ -116,3 +116,61 @@
           "normal"
           0
           (ipc-id ipc))))
+
+(define find-first-usable-attack
+  (lambda (ataques energias)
+    (cond
+      ((null? ataques) #f)
+      ((attack-can-use? (car ataques) energias) (car ataques))
+      (else (find-first-usable-attack (cdr ataques) energias)))))
+
+
+(define (extract-damage-from-text texto)
+  (let ((idx (regexp-match-positions #rx"[Ii]nflige" texto)))
+    (cond
+      ((not idx) 0)
+      (else
+       (let ((despues (substring texto (cdr (car idx)))))
+         (let ((lista-caracteres (string->list despues)))
+           (let ((caracteres-del-numero (buscar-primer-numero lista-caracteres)))
+             (if (null? caracteres-del-numero)
+                 0
+                 (string->number (list->string caracteres-del-numero))))))))))
+
+
+(define (buscar-primer-numero lista)
+  (if (null? lista)
+      '()
+      (if (char-numeric? (car lista))
+          
+          (cons (car lista) (tomar-consecutivos (cdr lista)))
+          
+          (buscar-primer-numero (cdr lista)))))
+
+
+(define (tomar-consecutivos lista)
+  (if (null? lista)
+      '()
+      (if (char-numeric? (car lista))
+          (cons (car lista) (tomar-consecutivos (cdr lista)))
+          '()))) 
+(define (compute-damage base-dmg atk-type def-weakness def-resistance)
+  (let ((mult (calcular-multiplicador atk-type def-weakness)))
+    (let ((red (calcular-reduccion atk-type def-resistance)))
+      (max 0 (- (* base-dmg mult) red)))))
+
+
+(define (calcular-multiplicador tipo debilidad)
+  (if (null? debilidad)
+      1
+      (if (eq? debilidad tipo)
+          2
+          1)))
+
+
+(define (calcular-reduccion tipo resistencia)
+  (if (null? resistencia)
+      0
+      (if (eq? resistencia tipo)
+          30
+          0)))
