@@ -29,7 +29,7 @@
 ; Descripción: Convierte el nombre de una carta a string .
 ; Dom: n (symbol/string)
 ; Rec: string
-;Tipo recursión: No aplica
+;Tipo recursión: No aplica;
 (define nombre->str
   (lambda (n)
     (cond
