@@ -1,0 +1,81 @@
+
+
+REQUISITOS
+
+- DrRacket version 9.1 o superior.
+
+
+ARCHIVOS DEL PROYECTO
+---------------------
+TDA-attack_20244569_ChamorroVega.rkt  - TDA Ataque (constructor, predicados, selectores).
+TDA-card_20244569_ChamorroVega.rkt    - TDA Carta (Pokemon, energia, entrenador).
+TDA-deck_20244569_ChamorroVega.rkt    - TDA Mazo (constructor con validacion y barajado).
+TDA-player_20244569_ChamorroVega.rkt  - TDA Jugador y Carta-en-juego.
+TDA-game_20244569_ChamorroVega.rkt    - TDA Partida (initGame, printGame, fases, turnos).
+main_20244569_ChamorroVega.rkt
+                     - Funciones de los requerimientos (RF08-RF15).
+                       Reexporta todos los TDAs para uso del cliente.
+pruebas_20244569_ChamorroVega.rkt
+                     - Script de pruebas con 8 turnos + pruebas
+                       adicionales de initGame y shuffleDeck.
+
+
+PASOS PARA EJECUTAR
+
+1. Abrir DrRacket.
+
+
+
+2. Para ejecutar el script de pruebas completo:
+   - Abrir el archivo "pruebas_20244569_ChamorroVega.rkt".
+   - Presionar el boton "Run" (Ctrl+R).
+   - El script imprime en pantalla las pruebas de initGame,
+     las de shuffleDeck y luego los 8 turnos del juego.
+
+
+ORDEN DE EJECUCION DE LAS PRUEBAS
+---------------------------------
+El script de pruebas ejecuta tres bloques en este orden:
+
+   1) Pruebas de initGame (2 casos):
+      - semilla 100 (caso valido).
+      - mazo desbalanceado de 1 basico + 59 energias
+        (caso que el sistema no detecta como erroneo).
+
+   2) Pruebas de shuffleDeck (3 casos):
+      - input invalido (debe lanzar error).
+      - misma semilla 77 dos veces (debe dar el mismo orden).
+      - semilla 50 vs semilla 200 (debe dar ordenes distintos).
+
+   3) Script principal de 8 turnos con semilla 50.
+
+
+NOTAS IMPORTANTES
+-----------------
+- Las pruebas de initGame y shuffleDeck usan "with-handlers" para
+  capturar errores sin detener la ejecucion del script.
+.
+
+- La semilla controla el orden del barajado: la misma semilla
+  siempre produce el mismo resultado.
+
+
+REQUERIMIENTOS IMPLEMENTADOS
+----------------------------
+RF01  Especificacion de TDAs              implementado
+RF02  Constructor de ataques              implementado
+RF03  Constructor de cartas               implementado
+RF04  Constructor de mazos                implementado
+RF05  shuffleDeck                         implementado
+RF06  initGame (con mulligan)             implementado
+RF07  printGame                           implementado
+RF08  playToBench                         implementado
+RF09  changeActivePokemon                 implementado
+RF10  drawCardFromDeck                    implementado
+RF11  useEnergyCard                       implementado
+RF12  evolvePokemon                       implementado
+RF13  useTrainerCard                      implementado
+RF14  usePokemonAbility                   implementado
+RF15  usePokemonAttack                    implementado
+
+

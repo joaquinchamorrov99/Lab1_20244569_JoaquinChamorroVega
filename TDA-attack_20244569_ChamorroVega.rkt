@@ -16,8 +16,13 @@
 
 ;TDA ATTACK
 ;;; REPRESENTACIÓN:
-;; Un ataque se representa como una lista de 4 elementos:
-;; (list costo nombre texto funcion)
+
+
+; Se representa internamente como una lista exacta de 4 elementos:
+; 1. Costo    (list)      : Lista de símbolos que representan las energías necesarias para atacar (fire water)).
+; 2. Nombre   (string)    : El nombre del ataque.
+; 3. Texto    (string)    : La descripción del ataque (útil para extraer el daño base).
+; 4. Función  (procedure) : El procedimiento lógico que se ejecuta para aplicar los efectos en el juego.
 
 ;Tipo de elemento
 (define ELEMENT-TYPE

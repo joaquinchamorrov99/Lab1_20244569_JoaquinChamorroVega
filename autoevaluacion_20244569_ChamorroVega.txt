@@ -1,0 +1,38 @@
+AUTOEVALUACION - Laboratorio 1 Paradigmas de Programacion
+Paradigma Funcional - Scheme/Racket
+
+
+REQUERIMIENTOS FUNCIONALES (RF)
+
+
+RF01 - TDAs - Especificacion e implementacion: 1
+RF02 - TDA Ataque - constructor (attack): 1
+RF03 - TDA Card - constructor (card): 1
+RF04 - TDA Deck - constructor (deck): 1
+RF05 - TDA Deck - shuffleDeck: 1
+RF06 - Iniciar juego (initGame): 1
+RF07 - printGame: 0,75
+RF08 - playToBench: 1
+RF09 - changeActivePokemon: 1
+RF10 - drawCardFromDeck: 1
+RF11 - useEnergyCard: 1
+RF12 - evolvePokemon: 1
+RF13 - useTrainerCard: 1
+RF14 - usePokemonAbility: 0,75
+RF15 - usePokemonAttack: 1
+
+
+REQUERIMIENTOS NO FUNCIONALES (RNF)
+
+
+RNF1 - Autoevaluacion: 1
+RNF2 - Lenguaje Scheme/Racket funcional: 1
+RNF3 - Version DrRacket 6.11+: 1
+RNF4 - Solo funciones estandar: 1
+RNF5 - No variables (no set!): 1
+RNF6 - Documentacion de funciones: 1
+RNF7 - Dom->Rec respetado: 1
+RNF8 - Organizacion en archivos: 1
+RNF9 - Historial Git: 1
+RNF10 - Script de pruebas: 1
+RNF11 - Prerrequisitos cumplidos: 1
